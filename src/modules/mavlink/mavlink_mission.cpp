@@ -691,6 +691,12 @@ MavlinkMissionManager::handle_mission_request_list(const mavlink_message_t *msg)
 	mavlink_msg_mission_request_list_decode(msg, &wprl);
 
 	if (CHECK_SYSID_COMPID_MISSION(wprl)) {
+		const bool maybe_completed = (_transfer_seq == current_item_count());
+
+		if (maybe_completed) {
+			switch_to_idle_state();
+		}
+
 		if (_state == MAVLINK_WPM_STATE_IDLE || (_state == MAVLINK_WPM_STATE_SENDLIST
 				&& (uint8_t)_mission_type == wprl.mission_type)) {
 			_time_last_recv = hrt_absolute_time();
